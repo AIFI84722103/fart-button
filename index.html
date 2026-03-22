@@ -1,0 +1,106 @@
+
+
+
+    
+    
+    The Fart Button
+    
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+        }
+
+        button {
+            padding: 40px 80px;
+            font-size: 32px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            background: #ff6b6b;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        button:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+    
+
+
+    FART
+
+    
+        const button = document.getElementById('fartButton');
+
+        function playFartSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+            // Create oscillators and filters to make a fart-like sound
+            const now = audioContext.currentTime;
+            const duration = 0.5;
+
+            // Main fart tone
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            const filter = audioContext.createBiquadFilter();
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioContext.destination);
+
+            // Set up the sound
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.exponentialRampToValueAtTime(80, now + duration);
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(800, now);
+            filter.frequency.exponentialRampToValueAtTime(400, now + duration);
+
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+            osc.start(now);
+            osc.stop(now + duration);
+
+            // Add a little vibrato/noise element
+            const noise = audioContext.createBufferSource();
+            const noiseBuffer = audioContext.createBuffer(1, audioContext.sampleRate * duration, audioContext.sampleRate);
+            const noiseData = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < noiseBuffer.length; i++) {
+                noiseData[i] = Math.random() * 2 - 1;
+            }
+            noise.buffer = noiseBuffer;
+
+            const noiseGain = audioContext.createGain();
+            noise.connect(noiseGain);
+            noiseGain.connect(audioContext.destination);
+            noiseGain.gain.setValueAtTime(0.1, now);
+            noiseGain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+            noise.start(now);
+        }
+
+        button.addEventListener('click', playFartSound);
+    
+
